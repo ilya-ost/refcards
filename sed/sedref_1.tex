@@ -1,0 +1,418 @@
+\documentclass[a4paper,10pt,landscape,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{color}
+\usepackage{listings}
+\lstloadlanguages{bash}
+\lstset{ %
+language=bash,                % choose the language of the code
+basicstyle=\small\ttfamily\color[gray]{0.40},       % the size of the fonts that are used for the code
+commentstyle=,
+frame=,			% adds a frame around the code
+tabsize=4,			% sets default tabsize to 2 spaces
+captionpos=b			% sets the caption-position to bottom
+}
+
+\usepackage{verbatim}
+\clubpenalty=10000
+\widowpenalty=10000
+
+\usepackage{geometry}
+\geometry{left=1cm}
+\geometry{right=1cm}
+\geometry{top=1cm}
+\geometry{bottom=1cm}
+
+\pagestyle{empty}
+
+\newcommand{\commanddescr}[2]{\small ~~ \texttt{#1} & \small #2 \smallskip \\ }
+
+\newenvironment{mycommands}[1]
+               { \begin{tabular}{lp{9cm}} \\
+                   \large{\textbf{#1}} \medskip \\ \hline \\}
+               { \\ \hline \end{tabular} \medskip }
+
+\newcommand{\sedex}[1]{\textcolor[gray]{0.40}{\texttt{#1}}}
+
+\begin{document}
+
+\textbf{\Huge{Sed reference}} \\
+
+\begin{mycommands}{Options}
+  
+  \commanddescr{-f}{
+    If you have a large number of sed commands, you 
+    can put them into a file and use 
+
+    \sedex{sed -f sedscript <old >new}
+  }
+
+  \commanddescr{-n}{ 
+    The ``-n'' option will not print anything unless an
+    explicit request to print is found 
+  }
+
+  \commanddescr{<filename>}{
+    You can specify files on the command line if you wish. If there is
+    more than one argument to sed that does not start with an option, it
+    must be a filename.
+
+    \sedex{sed 's/\^{}\#{}.*//' f1 f2 f3 | grep -v '\^{}\${}' | wc -l}
+  }
+
+  \commanddescr{-i}{
+    Edit files in place 
+  }
+
+  \commanddescr{-r}{
+    Use extended regular expressions in the script
+  }
+
+\end{mycommands}
+
+\begin{mycommands}{Substitution}
+  \commanddescr{s/regex/repl/}{ 
+    Substitute regexp with repl 
+
+    \sedex{sed 's/day/night/' <old >new }
+
+    \sedex{sed 's:/usr/local/bin:/common/bin:' <old >new }}
+
+  \commanddescr{\&}{
+    Corresponds to the pattern found
+
+    \sedex{\%{} echo ``123 abc'' | sed 's/[0-9][0-9]*/\& \&/'\newline
+      123 123 abc}
+  }
+
+  \commanddescr{\textbackslash 1}{
+    first remembered pattern
+
+    \sedex{sed 's/\textbackslash([a-z]*\textbackslash) \textbackslash([a-z]*\textbackslash)/\textbackslash2 \textbackslash1/'}\newline
+    \sedex{sed 's/\textbackslash([a-z]*\textbackslash) \textbackslash1/\textbackslash1/'}
+  }
+  
+  \commanddescr{/g}{
+    Global replacement
+
+    \sedex{sed 's/[\^{} ][\^{} ]*/(\&{})/g' <old >new}
+  }
+
+  \commanddescr{/2}{
+    You can add a number after the substitution command to indicate you only want to match that particular pattern
+
+    \sedex{sed 's/[a-zA-Z]* //2' <old >new}
+
+    \sedex{sed 's/[a-zA-Z]* /DELETED /2g' <old >new}
+
+    \sedex{sed 's/./\&{}:/80' <file >new}
+
+  }
+\end{mycommands}
+
+\begin{mycommands}{Substitution}
+
+  \commanddescr{/p}{
+    When the ``-n'' option is used, the ``p'' flag will 
+    cause the modified line to be printed
+
+    \sedex{sed -n 's/pattern/\&{}/p' <file}
+  }
+  
+  \commanddescr{/w}{
+    With it, you can specify a file that will receive the modified data.
+
+    \sedex{sed -n 's/\^{}[0-9]*[02468] /\&{}/w even' <file }
+  }
+
+\end{mycommands}
+
+\begin{mycommands}{Restrictions}
+  
+  \commanddescr{<number>}{
+    Restrict command to line number <number>
+
+    \sedex{sed '3 s/[0-9][0-9]*//' <file >new}
+  }
+
+  \commanddescr{/<regexp>/}{
+    Search for a regular expression 
+
+    \sedex{sed '/\^{}g/s/g/s/g'}
+
+    You can use another delimiter by placing it after \textbackslash{}
+
+    \sedex{sed '\textbackslash{}\_{}/usr/local/bin\_{} s\_{}/usr/local\_{}/common/all\_{}'}
+  }
+
+  \commanddescr{<n|re>,<n|re>}{
+    You can specify a range on line numbers or regular expressions 
+    by inserting a comma
+    
+    ``\${}'' means last line in the file
+
+    \sedex{sed -e '1,/start/ s/\#{}.*//'}
+  }
+
+  \commanddescr{!}{
+    Reverse the restriction
+
+    \sedex{sed -n '/match/ !p' </tmp/b}
+  }
+
+\end{mycommands}
+
+\begin{mycommands}{Commands}
+  
+  \commanddescr{d}{
+    Delete
+
+    \sedex{sed -e 's/\#{}.*//' -e 's/[ \^{}I]*\${}//' -e '/\^{}\${}/ d' }
+  }
+  \commanddescr{p}{
+
+    Print
+
+    \sedex{sed -n '1,10 p' <file}
+
+  }
+  \commanddescr{q}{
+    Quit
+
+    \sedex{sed '11 q'}
+  }
+
+\end{mycommands}
+
+ \pagebreak
+
+\begin{mycommands}{Commands}
+  \commanddescr{\{{}\}{}}{
+    The curly braces, ``\{{}'' and ``\}{}'' are used to group the commands. 
+    These braces can be nested, which allow you to combine address ranges.
+  }
+  &
+  \begin{lstlisting}
+    #!/bin/sh
+    # This is a Borne shell script that 
+    # removes #-type comments
+    # between 'begin' and 'end' words.
+    sed -n '
+    1,100 {
+      /begin/,/end/ {
+        s/#.*//
+        s/[ ^I]*$//
+        /^$/ d
+        p
+      }
+    }
+    '
+  \end{lstlisting}
+  \\
+  \commanddescr{w}{
+    Write to a file. Only one space must follow the command.
+
+    \sedex{sed -n '/\^{}[0-9]*[02468]/ w even' <file}
+  }
+
+  \commanddescr{r}{
+    Read a file
+
+    \sedex{sed '/INCLUDE/ r file' <in >out}
+
+  }
+
+  \commanddescr{a, i, c}{
+    The ``a'' command appends a line after the range or pattern.
+
+    \sedex{sed '/WORD/ a\textbackslash{} \newline 
+      Add this line after every line with WORD'}
+
+    You can insert a new line before the pattern with the ``i'' command.
+
+    \sedex{sed '/WORD/ i\textbackslash{} \newline
+      Add this line before every line with WORD'}
+
+    ``c'' can change the current line with a new line.
+
+    \sedex{sed '/WORD/ c\
+      Replace the current line with the line'}
+    }
+
+  \commanddescr{=}{
+    The ``='' command prints the current line number to standard output.
+
+    \sedex{lines=\`{}sed -n '\${}=' file\`{}}
+  }
+
+  \commanddescr{y}{
+    Operates like the ``tr'' program.
+
+    \sedex{sed '/0x[0-9a-zA-Z]*/ y/abcdef/ABCDEF' file}
+  }
+  
+  \commanddescr{l}{
+    The ``l'' command prints the current pattern space. 
+    It also converts unprintable characters into printing characters.
+  }
+  
+\end{mycommands}
+  
+\begin{mycommands}{Multiple lines}
+
+  \commanddescr{N}{ 
+    It reads in the next line and appends a new line character 
+    along with the input line itself to the pattern space. 
+  }
+
+  \commanddescr{D}{ 
+    Deletes the first portion of the pattern space, up
+    to the new line character, leaving the rest of the pattern alone.
+    If the ``D'' command is executed with a group of other commands in a
+    curly brace, commands after the ``D'' command are ignored. The next
+    group of sed commands is executed, unless the pattern space is
+    emptied.
+  }
+
+  \commanddescr{P}{
+    Prints the first part of the pattern space, up to the NEWLINE character. 
+  }
+  &
+  \begin{lstlisting}
+    #!/bin/sh
+    sed '
+    /ONE/ {
+      # append the next line
+      N
+      # look for "ONE" followed by "TWO"
+      /ONE.*TWO/ {
+        # delete everything between
+        s/ONE.*TWO/ONE TWO/
+        # print
+        P
+        # then delete the first line
+        D
+      }
+    }' file
+  \end{lstlisting}
+  \\
+\end{mycommands}
+
+\begin{mycommands}{Hold buffer}
+  
+  \commanddescr{x}{
+    eXchanges the pattern space with the hold buffer.
+  }
+
+  \commanddescr{h, H}{
+    Copy/append pattern space to hold space.
+  }
+
+  \commanddescr{g, G}{
+    Copy/append hold space to pattern space.
+  }
+
+
+\end{mycommands}
+\pagebreak
+\begin{mycommands}{Flow control}
+  
+  \commanddescr{b <label>}{
+    Branch to <label>; if label is omitted, branch to end of script.
+  }  
+  &
+  \begin{lstlisting}
+    #!/bin/sh
+    sed -n '
+    # if an empty line, check the paragraph
+    /^$/ b para
+    # else add it to the hold buffer
+    H
+    # at end of file, check paragraph
+    $ b para
+    # now branch to end of script
+    b
+    # this is where a paragraph 
+    # is checked for the pattern
+    :para
+    # return the entire paragraph
+    # into the pattern space
+    x
+    # look for the pattern, if there - print
+    /'\$1'/ p
+    '
+  \end{lstlisting}
+  \\
+
+  \commanddescr{t <label>}{
+    The command ``t <label>'' will branch to the <label> if the last 
+    substitute command modified the pattern space. 
+}
+  &
+  \begin{lstlisting}
+    #!/bin/sh
+    sed '
+    :again
+    s/([ ^I]*)//g
+    t again
+    '
+  \end{lstlisting}
+  \\
+
+  
+\end{mycommands}
+
+\pagebreak
+
+\begin{tabular}{*{6}{p{1.4cm}}}
+  \multicolumn{6}{l}{\large{\textbf{Command summary}}} \medskip \\ \hline \\
+
+ Command
+ & 
+ Address 
+ or Range
+ & 
+ \multicolumn{4}{c}{ Modifications to}
+ \\
+ & & 
+ Input 
+ Stream
+ & 
+ Output 
+ Stream
+ & 
+ Pattern
+ Space
+ & 
+ Hold
+ Buffer
+ \\
+ \hline
+ =&         -&         -&       Y&       -&        - \\
+ a&	    1&	       -&	Y&	 -&	   - \\
+ b&	    2&	       -&	-&	 -&	   - \\
+ c&	    2&	       -&	Y&	 -&	   - \\
+ d&	    2&	       Y&	-&	 Y&	   - \\
+ D&	    2&	       Y&	-&	 Y&	   - \\
+ g&	    2&	       -&	-&	 Y&	   - \\
+ G&	    2&	       -&	-&	 Y&	   - \\
+ h&	    2&	       -&	-&	 -&	   Y \\
+ H&	    2&	       -&	-&	 -&	   Y \\
+ i&	    1&	       -&	Y&	 -&	   - \\
+ l&	    1&	       -&	Y&	 -&	   - \\
+ n&	    2&	       Y&	*&	 -&	   - \\
+ N&	    2&	       Y&	-&	 Y&	   - \\
+ p&	    2&	       -&	Y&	 -&	   - \\
+ P&	    2&	       -&	Y&	 -&	   - \\
+ q&	    1&	       -&	-&	 -&	   - \\
+ r&	    1&	       -&	Y&	 -&	   - \\
+ s&	    2&	       -&	-&	 Y&	   - \\
+ t&	    2&	       -&	-&	 -&	   - \\
+ w&	    2&	       -&	Y&	 -&	   - \\
+ x&	    2&	       -&	-&	 Y&	   Y \\
+ y&	    2&	       -&	-&	 Y&	   - \\
+\hline
+
+\end{tabular}
+
+\end{document}

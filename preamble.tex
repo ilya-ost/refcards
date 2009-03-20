@@ -1,0 +1,30 @@
+\documentclass[a4paper,10pt,landscape,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{color}
+\clubpenalty=10000
+\widowpenalty=10000
+
+\usepackage{geometry}
+\geometry{left=1cm}
+\geometry{right=1cm}
+\geometry{top=1cm}
+\geometry{bottom=1cm}
+
+\pagestyle{empty}
+
+\newcommand{\commanddescr}[2]{\small ~~ \texttt{#1} & \small #2 \smallskip \\ }
+
+\newenvironment{mycommands}[1]
+               { \begin{tabular}{lp{9cm}} \\
+                   \large{\textbf{#1}} \medskip \\ \hline \\}
+               { \\ \hline \end{tabular} \medskip }
+
+\newcommand{\sedex}[1]{\textcolor[gray]{0.40}{\texttt{#1}}}
+
+\newcommand{\keydescr}[2]{\small #2 & \small \texttt{#1} \\ }
+
+\newenvironment{mykeys}[1]
+               { \begin{tabular}{p{8cm}l} \\
+                   \large{\textbf{#1}} \medskip \\  }
+               {  \end{tabular} \medskip }

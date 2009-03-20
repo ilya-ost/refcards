@@ -1,0 +1,121 @@
+\documentclass[a4paper,10pt,landscape,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{listings}
+\usepackage{lscape}
+\usepackage{verbatim}
+\clubpenalty=10000
+\widowpenalty=10000
+\usepackage{geometry}
+\geometry{left=1cm}
+\geometry{right=1cm}
+\geometry{top=1cm}
+\geometry{bottom=1cm}
+
+\pagestyle{empty}
+
+\newcommand{\keydescr}[2]{\small #2 & \small \texttt{#1} \\ }
+
+\newenvironment{mykeys}[1]
+               {\large{\textbf{#1}}\nopagebreak \medskip \\
+                 \begin{tabular}{p{8cm}l} }
+               {  \end{tabular} \bigskip }
+
+\begin{document}
+
+\textbf{\Huge{Emacs reference card}} \\
+
+\begin{mykeys}{General}
+  \keydescr{C-z}{
+    Undo }
+  \keydescr{C-u C-z}{Undo within region}
+  \keydescr{C-x 4 0}{
+    Delete the selected window and kill the buffer
+    that was showing in it \mbox{(kill-buffer-and-window)} }
+ \keydescr{M-r}{
+   Move to center}
+ \keydescr{M-g M-g} {
+   Goto line}
+ \keydescr{M-<number> <command>} {
+   Numeric argument}
+ \keydescr{C-x z} {
+   Repeat last command}
+ \keydescr{C-x C-l or C-x C-u}{Convert case on region}
+ \keydescr{C-x <TAB>} {Indent region}
+\end{mykeys}
+
+\begin{mykeys}{Marking}
+  \keydescr{M-@}{Set mark after end of next word}
+  \keydescr{C-M-@}{Set mark after end of following balanced 
+    expression}
+  \keydescr{M-h}{Mark paragraph}
+  \keydescr{C-M-h}{Mark defun}
+  \keydescr{C-u C-SPC}{
+    Cycle through mark ring }
+  \keydescr{C-x C-<SPC>}{(pop-global-mark)}
+\end{mykeys}
+
+\begin{mykeys}{Deletion and Killing}
+  \keydescr{C-u C-u C-k}{Kill 16 lines}
+  \keydescr{M-\textbackslash{}}{Delete spaces and tabs around point}
+  \keydescr{M-<SPC>}{Delete spaces and tabs around point, leaving one space}
+  \keydescr{M-\^{}}{Join two lines by deleting the intervening newline, 
+    along with any indentation following it}
+  \keydescr{C-S-backspace}{Kill an entire line at once}
+  \keydescr{M-k}{Kill to end of sentence}
+  \keydescr{C-M-k}{Kill the following balanced expression}
+  \keydescr{M-z char}{Kill through the next occurrence of char (zap-to-char)}
+\end{mykeys}
+
+\begin{mykeys}{Bookmarks}
+  \keydescr{C-x r m <RET>}{Set the bookmark for the visited file, at point}
+  \keydescr{C-x r m bookmark <RET>} {Set the bookmark
+    named bookmark at point }
+  \keydescr{C-x r b bookmark <RET>}{Jump to the bookmark 
+    named bookmark}
+  \keydescr{C-x r l} { List all bookmarks}  
+\end{mykeys}
+
+\begin{mykeys}{Narrowing}
+ \keydescr{C-x n n}
+          {Narrow to region}
+ \keydescr{C-x n w}
+          {Widen}
+ \keydescr{C-x n d}
+          {Narrow to defun}
+\end{mykeys}
+
+\begin{mykeys}{Hide-show commands}
+  \keydescr{C-c @ C-h}
+           {Hide the current block \mbox{(hs-hide-block)}}
+  \keydescr{C-c @ C-s}
+                    {Show the current block \mbox{(hs-show-block)}}
+  \keydescr{C-c @ C-c}
+           {Either hide or show the current block \mbox{(hs-toggle-hiding)}}
+  \keydescr{C-c @ C-M-h}
+           {Hide all top-level blocks \mbox{(hs-hide-all)}}
+  \keydescr{C-c @ C-M-s}
+           {Show everything in the buffer \mbox{(hs-show-all)}}
+\end{mykeys}
+
+\begin{mykeys}{\LaTeX{} mode}
+ \keydescr{C-j}
+          {\TeX{} terminate paragraph}
+ \keydescr{C-c C-c}
+          {\TeX{} compile}
+ \keydescr{C-c C-e}
+          {\LaTeX{} close block}
+ \keydescr{C-c C-l}
+          {\TeX{} recenter output buffer}
+ \keydescr{C-c C-o}
+          {\LaTeX{} insert block}
+ \keydescr{C-c C-s}
+          {\LaTeX{} split block}
+ \keydescr{C-c C-u} 
+          {\TeX{} goto last unclosed latex block}
+ \keydescr{C-c C-v}
+          {\TeX{} view}
+\end{mykeys}
+
+\end{document}
+
